@@ -189,8 +189,8 @@ var twittler = (function($) {
 
 	// Click handlers for usernames
 	$('#tweets').find('ul').on("click", 'a', function(e) {
-		$('#tweets').find('ul').html("");
-		console.log("Switching to: " + e.currentTarget.innerText);
+		$('#tweets').find('ul').empty();
+
 		var user = e.currentTarget.innerText;
 
 		h = new Head(0);
