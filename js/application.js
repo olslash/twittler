@@ -187,12 +187,8 @@ var twittler = (function($) {
 		r.setWaiting(s.check()); // Check for new tweets
 	}, PERIOD);
 
-	// Click handlers for usernames
-	$('#tweets').find('ul').on("click", 'a', function(e) {
-		$('#tweets').find('ul').empty();
-
-		var user = e.currentTarget.innerText;
-
+	var changeTarget = function(user) {
+		// TODO: this is kind of hacky I think
 		h = new Head(0);
 		s = new Streamer(h, user);
 		r.killHandlers(); // TODO: I shouldn't have to do this explicitly.
@@ -201,5 +197,16 @@ var twittler = (function($) {
 		s.read(10).forEach(function(e) {
 			displayTweet(createTweetDiv(e.user, e.message, getFormattedDate(e.created_at)), false);
 		});
+	};
+	// Click handlers for usernames
+	$('#tweets').find('ul').on("click", 'a', function(e) {
+		$('#tweets').find('ul').empty();
+
+		var user = e.currentTarget.innerText;
+		changeTarget(user);
 	});
+
+	// TODO: Generate the followed list
+	// TODO: Add a "show all" button
+	// TODO: Header should show target of current stream.
 })(jQuery);
