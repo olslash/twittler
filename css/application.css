@@ -56,6 +56,10 @@ ul {
     padding: 5px;
     display: none;
 }
+#show-more-buttons>a {
+    display:none;
+}
+
 .border {
     border: 2px solid black;
 }
