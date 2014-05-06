@@ -104,11 +104,7 @@ var twittler = (function($) {
 		var waiting = 0;
 		var buffer = ribbonselector.find($('#tweet-buffer-length'));
 		var buttons = [];
-		// if (handlers) {
-
-
 		var handlers = [];
-
 
 		// Figure out what buttons are available.
 		$.each(ribbonselector.find("[data-num]"), function(i, e) {
