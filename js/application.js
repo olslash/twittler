@@ -17,8 +17,9 @@ var twittler = (function($) {
 			href: '#!'
 		});
 
-		var time = $("<small>", {
-			text: timeago
+		var time = $("<time>", {
+			datetime: timeago,
+			class: 'timeago'
 		});
 
 		var tweet = $("<p>", {
@@ -41,6 +42,9 @@ var twittler = (function($) {
 		var thistweet = $(location).find('li').first();
 		thistweet.hide();
 
+		// Set timeago's auto updater function on the new tweet.
+		$(thistweet).find('time').timeago();
+
 		if (anim)
 			thistweet.slideDown();
 		else
@@ -49,7 +53,7 @@ var twittler = (function($) {
 
 	var getFormattedDate = function(date) {
 		var d = new Date(date);
-		return d.toTimeString(); //todo: "ago" time string
+		return d.toISOString(); //todo: "ago" time string
 	};
 
 	// ---------- Functions for dealing with tweet data ----------
@@ -235,7 +239,6 @@ var twittler = (function($) {
 		$('#tweets').find('ul').empty();
 		changeTarget(null);
 	});
-
 
 	// TODO: Generate the followed list
 	// TODO: Header should show target of current stream.
