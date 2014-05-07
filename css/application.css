@@ -112,7 +112,10 @@ a:link, a:visited{
     text-decoration: underline;
 }*/
 
-.stream-header small {
+.stream-header time {
     float: right;
     color: grey;
+}
+
+#current-target {
 }
