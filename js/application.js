@@ -14,7 +14,7 @@ var twittler = (function($) {
 		var name = $("<a>", {
 			class: 'username',
 			text: username,
-			href: '#'
+			href: '#!'
 		});
 
 		var time = $("<small>", {
@@ -66,37 +66,58 @@ var twittler = (function($) {
 
 		};
 
-		this.scrubto = function(where) {
-
+		this.scrubTo = function(where) {
+			that.headposition = where;
 		};
 	};
 
 	var Streamer = function(head, user) { // Handles interaction with the tweet stream
-		var that = this;
-		this.target = user ? window.streams.users[user] : window.streams.home;
 
+		// this.target = user ? window.streams.users[user] : window.streams.home;
+		var target;
+		var localhead = head;
+		
 		this.check = function() { // Returns number of new tweets past the head
-			var len = that.target.length;
-			return len - head.headposition;
+			var len = target.length;
+			return len - localhead.headposition;
 		};
 
 		this.read = function(howmany) { // Returns <howmany> tweets and advances the head.
 			var result;
-			var headposition = head.headposition;
-			var available = that.target.length - headposition;
+			var headposition = localhead.headposition;
+			var available = target.length - headposition;
 
 			if (howmany <= available) {
-				result = that.target.slice(headposition, headposition + howmany);
+				result = target.slice(headposition, headposition + howmany);
 			} else {
 				console.log("Streamer.get(): Not enough tweets to fill that request. Requested " +
 					howmany + ", returning " + available);
 				//return as many as we can
-				result = that.target.slice(head, that.target.length);
+				result = target.slice(head, target.length);
 			}
 
-			head.fastforward(result.length);
+			localhead.fastforward(result.length);
 			return result;
 		};
+
+		this.setTarget = function(user) {
+			//todo: dom show/hide should obviously not be here but UGH i want this to work.
+			var selector = $('#current-target');
+			if (user)
+				selector.show();
+			else
+				selector.hide();
+
+			target = user ? window.streams.users[user] : window.streams.home;
+
+
+		};
+
+		this.getTarget = function() {
+			return target;	
+		};
+		var that = this;
+		this.setTarget(user);
 	};
 
 	var Ribbon = function(streamer, ribbonselector) { // Handles behavior of the "show more" ribbon
@@ -143,23 +164,23 @@ var twittler = (function($) {
 			// TODO: make this not hardcoded
 			// TODO: definitely a better way to do this than a bunch of IFs
 			if (waiting >= 1) {
-				buttons[0].show();
+				buttons[0].fadeIn();
 			}
 			if (waiting >= 5) {
-				buttons[1].show();
+				buttons[1].fadeIn();
 			}
 			if (waiting >= 15) {
-				buttons[2].show();
+				buttons[2].fadeIn();
 			}
 
 			if (waiting < 1) {
-				buttons[0].hide();
+				buttons[0].fadeOut();
 			}
 			if (waiting < 5) {
-				buttons[1].hide();
+				buttons[1].fadeOut();
 			}
-			if (waiting <= 15) {
-				buttons[2].hide();
+			if (waiting < 15) {
+				buttons[2].fadeOut();
 			}
 		};
 
@@ -171,34 +192,37 @@ var twittler = (function($) {
 		};
 	};
 
-	var PERIOD = 1000; // How often to run the main loop
-
-	var h = new Head(0);
-	var s = new Streamer(h);
-	var r = new Ribbon(s, $("#show-more-buttons"));
-
-	// Populate page on load
-	s.read(10).forEach(function(e) {
-		displayTweet(createTweetDiv(e.user, e.message, getFormattedDate(e.created_at)), false);
-	});
-
-	window.setInterval(function() {
-		// Main loop
-		r.setWaiting(s.check()); // Check for new tweets
-	}, PERIOD);
-
 	var changeTarget = function(user) { // Change page target and repopulate.
 		// TODO: this is kind of hacky I think
-		h = new Head(0);
-		s = new Streamer(h, user);
-		r.killHandlers(); // TODO: I shouldn't have to do this explicitly.
+		s.setTarget(user);
+		
+
+		if (r) { r.killHandlers(); }// TODO: I shouldn't have to do this explicitly.
+
 		r = new Ribbon(s, $("#show-more-buttons"));
 
+		//TODO: yuck
+		h.scrubTo(s.getTarget().length - 10);
 		s.read(10).forEach(function(e) {
 			displayTweet(createTweetDiv(e.user, e.message, getFormattedDate(e.created_at)), false);
 		});
+
 		r.setWaiting(s.check());
+
+		clearInterval(mainloop);
+		mainloop = window.setInterval(function() {
+			r.setWaiting(s.check()); // Check for new tweets
+		}, PERIOD);
 	};
+
+	var PERIOD = 1000; // How often to run the main loop
+	var mainloop;
+	var h = new Head(0); // Head 
+	var s = new Streamer(h);
+	var r = new Ribbon(s, $("#show-more-buttons"));
+
+	changeTarget(null);
+
 	// Click handlers for usernames
 	$('#tweets').find('ul').on("click", 'a', function(e) {
 		$('#tweets').find('ul').empty();
@@ -211,6 +235,7 @@ var twittler = (function($) {
 		$('#tweets').find('ul').empty();
 		changeTarget(null);
 	});
+
 
 	// TODO: Generate the followed list
 	// TODO: Header should show target of current stream.
