@@ -77,7 +77,6 @@ var twittler = (function($) {
 
 	var Streamer = function(head, user) { // Handles interaction with the tweet stream
 
-		// this.target = user ? window.streams.users[user] : window.streams.home;
 		var target;
 		var localhead = head;
 		
