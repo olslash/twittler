@@ -53,7 +53,7 @@ var twittler = (function($) {
 
 	var getFormattedDate = function(date) {
 		var d = new Date(date);
-		return d.toISOString(); //todo: "ago" time string
+		return d.toISOString();
 	};
 
 	// ---------- Functions for dealing with tweet data ----------
