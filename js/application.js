@@ -59,11 +59,11 @@ var twittler = (function($) {
 	// ---------- Functions for dealing with tweet data ----------
 
 	var Head = function(initial) { // A "tape head" that marks our position in the tweet stream
-		var that = this;
+		//var that = this;
 		this.headposition = initial || 0;
 
 		this.fastforward = function(howfar) {
-			that.headposition += howfar;
+			this.headposition += howfar;
 		};
 
 		this.rewind = function(howfar) {
@@ -71,16 +71,15 @@ var twittler = (function($) {
 		};
 
 		this.scrubTo = function(where) {
-			that.headposition = where;
+			this.headposition = where;
 		};
 	};
 
 	var Streamer = function(head, user) { // Handles interaction with the tweet stream
 
-		// this.target = user ? window.streams.users[user] : window.streams.home;
 		var target;
 		var localhead = head;
-		
+
 		this.check = function() { // Returns number of new tweets past the head
 			var len = target.length;
 			return len - localhead.headposition;
@@ -113,19 +112,17 @@ var twittler = (function($) {
 				selector.hide();
 
 			target = user ? window.streams.users[user] : window.streams.home;
-
-
 		};
 
 		this.getTarget = function() {
-			return target;	
+			return target;
 		};
-		var that = this;
+		//var that = this;
 		this.setTarget(user);
 	};
 
 	var Ribbon = function(streamer, ribbonselector) { // Handles behavior of the "show more" ribbon
-		var that = this;
+		//var that = this;
 		var waiting = 0;
 		var buffer = ribbonselector.find($('#tweet-buffer-length'));
 		var buttons = [];
@@ -138,15 +135,15 @@ var twittler = (function($) {
 
 		// Set click handlers on those buttons
 		buttons.forEach(function(e) {
-			// TODO: the behavior in here should probably be passed in as a callback instead.
 			handlers.push(e.on("click", function(event) {
 				var thisAmount = $(event.currentTarget).data().num;
 
 				streamer.read(thisAmount).forEach(function(e, i) {
 					displayTweet(createTweetDiv(e.user, e.message, getFormattedDate(e.created_at)), true);
+                    
 				});
-
-				that.setWaiting(streamer.check());
+                this.setWaiting(streamer.check());
+				
 			}));
 		});
 
@@ -199,15 +196,14 @@ var twittler = (function($) {
 	var changeTarget = function(user) { // Change page target and repopulate.
 		// TODO: this is kind of hacky I think
 		s.setTarget(user);
-		
 
 		if (r) { r.killHandlers(); }// TODO: I shouldn't have to do this explicitly.
 
 		r = new Ribbon(s, $("#show-more-buttons"));
 
 		//TODO: yuck
-		h.scrubTo(s.getTarget().length - 10);
-		s.read(10).forEach(function(e) {
+		h.scrubTo(s.getTarget().length - INITIAL_POP);
+		s.read(INITIAL_POP).forEach(function(e) {
 			displayTweet(createTweetDiv(e.user, e.message, getFormattedDate(e.created_at)), false);
 		});
 
@@ -220,8 +216,9 @@ var twittler = (function($) {
 	};
 
 	var PERIOD = 1000; // How often to run the main loop
+	var INITIAL_POP = 10;
 	var mainloop;
-	var h = new Head(0); // Head 
+	var h = new Head(0); // Head
 	var s = new Streamer(h);
 	var r = new Ribbon(s, $("#show-more-buttons"));
 
