@@ -96,7 +96,7 @@ var twittler = (function($) {
 				console.log("Streamer.get(): Not enough tweets to fill that request. Requested " +
 					howmany + ", returning " + available);
 				//return as many as we can
-				result = target.slice(head, target.length);
+				result = target.slice(headposition, target.length);
 			}
 
 			localhead.fastforward(result.length);
