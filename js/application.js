@@ -122,7 +122,7 @@ var twittler = (function($) {
     };
 
     var Ribbon = function(streamer, ribbonselector) { // Handles behavior of the "show more" ribbon
-        //var that = this;
+        var that = this;
         var waiting = 0;
         var buffer = ribbonselector.find($('#tweet-buffer-length'));
         var buttons = [];
@@ -142,8 +142,8 @@ var twittler = (function($) {
                     displayTweet(createTweetDiv(e.user, e.message, getFormattedDate(e.created_at)), true);
 
                 });
-                this.setWaiting(streamer.check());
-
+                console.log(this);
+                that.setWaiting(streamer.check());
             }));
         });
 
