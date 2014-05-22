@@ -96,7 +96,7 @@ var twittler = (function($) {
                 console.log("Streamer.get(): Not enough tweets to fill that request. Requested " +
                     howmany + ", returning " + available);
                 //return as many as we can
-                result = target.slice(head, target.length);
+                result = target.slice(headposition, target.length);
             }
 
             localhead.fastforward(result.length);
@@ -140,7 +140,6 @@ var twittler = (function($) {
 
                 streamer.read(thisAmount).forEach(function(e, i) {
                     displayTweet(createTweetDiv(e.user, e.message, getFormattedDate(e.created_at)), true);
-
                 });
                 that.setWaiting(streamer.check());
             }));
@@ -187,8 +186,9 @@ var twittler = (function($) {
         var checkVisibility = function() { // Displays or hides the ribbon depending on if we have tweets waiting.
             if (waiting > 0)
                 ribbonselector.slideDown();
-            else
-                ribbonselector.slideUp();
+            else {
+                //ribbonselector.slideUp();
+            }
         };
     };
 
