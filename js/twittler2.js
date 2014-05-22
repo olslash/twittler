@@ -2,7 +2,7 @@ var twittler = (function($) {
 
   // ---------- Functions for displaying tweets to the page ----------
 
-  var createTweetDiv = function(username, text, timeago) {
+  var createTweetDiv = function(username, text, createdAt) {
     var wrapper = $("<div>", {
       class: 'content'
     });
@@ -18,7 +18,7 @@ var twittler = (function($) {
     });
 
     var time = $("<time>", {
-      datetime: timeago,
+      datetime: createdAt,
       class: 'timeago'
     });
 
@@ -196,7 +196,7 @@ var twittler = (function($) {
       r.setWaiting(s.checkNew()); // Check for new tweets
     };
 
-    $.unsubscribe("/twittler/showTweets");
+    $.unsubscribe("/twittler/showTweets"); // Clear any old handlers
     $.subscribe("/twittler/showTweets", showTweetsHandler);
 
     $.publish("/twittler/showTweets", [initial, false]); // Populate the page on load.
