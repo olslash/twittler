@@ -66,6 +66,7 @@ var twittler = (function($) {
   var Head = function(initial) {
     this.currentPosition = initial;
   };
+
   Head.prototype = {
     getPosition: function() {
       return this.currentPosition;
@@ -77,9 +78,11 @@ var twittler = (function($) {
   };
 
 
-  var Streamer = function(head, target) {
-    this.target = target ?
-      window.streams.users[target] : window.streams.home;
+  var Streamer = function(head, targetStream) {
+    // this.target = target ?
+    // window.streams.users[target] : window.streams.home;
+    this.id = Math.random() * 100 | 0;
+    this.target = targetStream;
     this.head = head;
   };
 
@@ -169,20 +172,44 @@ var twittler = (function($) {
     }
   };
 
-  var h = new Head(0);
-  var s = new Streamer(h);
-  r = new Ribbon($("#show-more-buttons"));
+  // ------------------- Main ---------------------
+  
+  var changeTarget = function(targetName) {
+    clearInterval(window.checkLoop);
 
-  $.subscribe("/twittler/showTweets", function(_, howmany, anim) {
-    displayTweets(s.read(howmany), anim);
-    r.setWaiting(s.checkNew()); // Check for new tweets
-  });
+    // Translate target's name to a stream name
+    var targetStream = targetName ? window.streams.users[targetName] : window.streams.home;
 
-  $.publish("/twittler/showTweets", [10, false]); // Populate the page on load.
+    // Verify that the stream is long enough to grab <initialPop> entries,
+    // otherwise, grab as many as we can
+    var initial;
+    if (targetStream.length < initialPop) {
+      initial = targetStream.length;
+    } else {
+      initial = initialPop;
+    }
 
-  var checkLoop = window.setInterval(function() {
-    r.setWaiting(s.checkNew()); // Check for new tweets
-  }, 1000); //reset this when target changes
+    var s = new Streamer(new Head(targetStream.length - initial), targetStream);
+
+    var showTweetsHandler = function(_, howmany, anim) {
+      displayTweets(s.read(howmany), anim);
+      r.setWaiting(s.checkNew()); // Check for new tweets
+    };
+
+    $.unsubscribe("/twittler/showTweets");
+    $.subscribe("/twittler/showTweets", showTweetsHandler);
+
+    $.publish("/twittler/showTweets", [initial, false]); // Populate the page on load.
+
+    window.checkLoop = window.setInterval(function() {
+      r.setWaiting(s.checkNew()); // Check for new tweets
+    }, 1000);
+  };
+
+  var initialPop = 10;
+  var r = new Ribbon($("#show-more-buttons"));
+
+  changeTarget(); // Kick things off by changing target to the global stream
 
 
   // TODO: Generate the followed list
