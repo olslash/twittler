@@ -173,7 +173,7 @@ var twittler = (function($) {
   };
 
   // ------------------- Main ---------------------
-  
+
   var changeTarget = function(targetName) {
     clearInterval(window.checkLoop);
 
@@ -200,6 +200,7 @@ var twittler = (function($) {
     $.subscribe("/twittler/showTweets", showTweetsHandler);
 
     $.publish("/twittler/showTweets", [initial, false]); // Populate the page on load.
+    $.publish("twittler/changingTarget", [targetName]); //notify UI target changed
 
     window.checkLoop = window.setInterval(function() {
       r.setWaiting(s.checkNew()); // Check for new tweets
@@ -208,6 +209,28 @@ var twittler = (function($) {
 
   var initialPop = 10;
   var r = new Ribbon($("#show-more-buttons"));
+
+  // Click handlers for usernames
+  $('#tweets').find('ul').on("click", 'a', function(e) {
+    clearTweetList();
+    var user = e.currentTarget.innerText;
+    changeTarget(user);
+  });
+
+  //click handler for the "show tweets from all users" link
+  $('#show-all').on("click", "a", function() {
+    clearTweetList();
+    changeTarget(null);
+  });
+
+  // "show tweets from all users" link subscribes to target changes
+  $.subscribe("twittler/changingTarget", function(_, user) {
+    var selector = $('#current-target');
+    if (user)
+      selector.show();
+    else
+      selector.hide();
+  });
 
   changeTarget(); // Kick things off by changing target to the global stream
 
