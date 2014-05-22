@@ -117,5 +117,6 @@ a:link, a:visited{
     color: grey;
 }
 
-#current-target {
+#show-all {
+    opacity: 0;
 }

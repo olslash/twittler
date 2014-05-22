@@ -225,11 +225,12 @@ var twittler = (function($) {
 
   // "show tweets from all users" link subscribes to target changes
   $.subscribe("twittler/changingTarget", function(_, user) {
-    var selector = $('#current-target');
+  	console.log("user is " + user);
+    var selector = $('#show-all');
     if (user)
-      selector.show();
+      selector.fadeTo(200, 1);
     else
-      selector.hide();
+      selector.fadeTo(200, 0);
   });
 
   changeTarget(); // Kick things off by changing target to the global stream
