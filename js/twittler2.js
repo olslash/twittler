@@ -225,7 +225,6 @@ var twittler = (function($) {
 
   // "show tweets from all users" link subscribes to target changes
   $.subscribe("twittler/changingTarget", function(_, user) {
-  	console.log("user is " + user);
     var selector = $('#show-all');
     if (user)
       selector.fadeTo(200, 1);
