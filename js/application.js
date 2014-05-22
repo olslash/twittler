@@ -66,9 +66,9 @@ var twittler = (function($) {
             this.headposition += howfar;
         };
 
-        this.rewind = function(howfar) {
+        // this.rewind = function(howfar) {
 
-        };
+        // };
 
         this.scrubTo = function(where) {
             this.headposition = where;
@@ -142,7 +142,6 @@ var twittler = (function($) {
                     displayTweet(createTweetDiv(e.user, e.message, getFormattedDate(e.created_at)), true);
 
                 });
-                console.log(this);
                 that.setWaiting(streamer.check());
             }));
         });
