@@ -232,7 +232,7 @@ var twittler = (function($) {
       selector.fadeTo(200, 0);
   });
 
-  changeTarget(); // Kick things off by changing target to the global stream
+  changeTarget(null); // Kick things off by changing target to the global stream
 
 
   // TODO: Generate the followed list
