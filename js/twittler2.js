@@ -81,7 +81,7 @@ var twittler = (function($) {
   var Streamer = function(head, targetStream) {
     // this.target = target ?
     // window.streams.users[target] : window.streams.home;
-    this.id = Math.random() * 100 | 0;
+    // this.id = Math.random() * 100 | 0;
     this.target = targetStream;
     this.head = head;
   };
